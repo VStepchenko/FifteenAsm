@@ -154,6 +154,12 @@
     <None Include="WinApiConstants.inc" />
     <None Include="WinApiProto.inc" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="Fifteenicon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="FifteenAsm.rc" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />

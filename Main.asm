@@ -137,6 +137,40 @@ WndProc proc hWin :DWORD, uMsg :DWORD, wParam :DWORD, lParam :DWORD
     LOCAL Ps     :PAINTSTRUCT
     LOCAL hDC    :DWORD
 
+    .IF uMsg == WM_COMMAND
+
+        .IF wParam == 1000
+            invoke SendMessageA, hwin, WM_SYSCOMMAND, SC_CLOSE, NULL
+        .ENDIF
+
+        .IF wParam == 1100
+            invoke MessageBoxA, hwin, ADDR newGameConfirmationText, ADDR caption, MB_YESNO
+            .IF eax == IDYES
+                ;call InitTilesData
+            .ELSEIF eax == IDNO
+                xor eax, eax
+                ret
+            .ENDIF
+        .ENDIF
+
+        .IF wParam == 1800
+            invoke MessageBoxA, hwin, ADDR howToText, ADDR caption, MB_OK
+        .ENDIF
+
+        .IF wParam == 1900
+            invoke MessageBoxA, hwin, ADDR aboutText, ADDR caption, MB_OK
+        .ENDIF
+
+    .ENDIF
+
+    .IF uMsg == WM_CLOSE
+        invoke MessageBoxA, hwin, ADDR exitConfirmationText, ADDR caption, MB_YESNO
+        .IF eax == IDNO
+            xor eax, eax
+            ret
+        .ENDIF
+    .ENDIF
+
     .IF uMsg == WM_DESTROY
         invoke PostQuitMessage, NULL
         xor eax, eax
