@@ -19,4 +19,15 @@
       <Filter>Source Files</Filter>
     </MASM>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="WinApiProto.inc">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="WinApiConstants.inc">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="AppConstants.inc">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>
