@@ -27,4 +27,4 @@ asciiShift              equ 48
 
 prndMagicNumber         equ 08088405H
 
-initialSwapCount        equ 30
+initialSwapCount        equ 100

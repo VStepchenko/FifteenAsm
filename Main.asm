@@ -157,7 +157,7 @@ WndProc proc hWin :DWORD, uMsg :DWORD, wParam :DWORD, lParam :DWORD
         .IF wParam == 1100
             invoke MessageBoxA, hwin, ADDR newGameConfirmationText, ADDR caption, MB_YESNO
             .IF eax == IDYES
-                ;call InitTilesData
+                call InitTilesData
             .ELSEIF eax == IDNO
                 xor eax, eax
                 ret
@@ -172,6 +172,22 @@ WndProc proc hWin :DWORD, uMsg :DWORD, wParam :DWORD, lParam :DWORD
             invoke MessageBoxA, hwin, ADDR aboutText, ADDR caption, MB_OK
         .ENDIF
 
+    .ENDIF
+
+    .IF uMsg == WM_KEYDOWN
+        .if wParam == VK_LEFT
+            invoke ProcessArrow, hWin, wParam
+        .elseif wParam == VK_RIGHT
+            invoke ProcessArrow, hWin, wParam
+         .elseif wParam == VK_UP
+            invoke ProcessArrow, hWin, wParam
+         .elseif wParam == VK_DOWN
+            invoke ProcessArrow, hWin, wParam
+        .endif
+    .ENDIF
+
+    .IF uMsg == WM_LBUTTONUP
+        invoke ProcessClick, hWin, lParam
     .ENDIF
 
     .IF uMsg == WM_PAINT
@@ -464,6 +480,72 @@ ProcessArrow proc hWin:DWORD, key:DWORD
     pass:
     ret
 ProcessArrow endp
+
+ProcessClick proc hWin:DWORD, lParam:DWORD
+        
+    local hor : byte
+    local vert : byte
+    local index : byte
+    local rct : RECT
+
+    movsx ebx, WORD PTR [ebp+12] ; x coordinate
+    movsx ecx, WORD PTR [ebp+14] ; y coordinate
+
+    mov vert, 0
+    .WHILE vert < 4
+        mov hor, 0
+        .WHILE hor < 4
+            
+            invoke CalculateTileRect, ADDR Rct, hor, vert
+            
+            cmp ebx, Rct.left
+            jb next
+            cmp ebx, Rct.right
+            ja next
+            cmp ecx, Rct.top
+            jb next
+            cmp ecx, Rct.bottom
+            ja next
+
+            mov eax, 4
+            mul vert
+            add al, hor
+            mov index, al
+
+            mov bl, [tilesArray+eax]
+            .IF bl != 0
+                
+                ; the idea is that tile can be moved only if there is a particular diff between its index and empty tile index
+                ; -1, +1 ,-4, +4 for different directions, similar to ProcessArrow proc
+                call FindEmptyTileIndex
+
+                .IF index > al
+                    sub index, al
+                    .IF index == 1
+                        invoke ProcessArrow, hWin, VK_LEFT
+                    .ELSEIF index == 4
+                        invoke ProcessArrow, hWin, VK_UP
+                    .ENDIF
+                .ELSEIF index < al
+                    sub al, index
+                    .IF al == 1
+                        invoke ProcessArrow, hWin, VK_RIGHT
+                    .ELSEIF al == 4
+                        invoke ProcessArrow, hWin, VK_DOWN
+                    .ENDIF
+                .ENDIF
+                
+            .ENDIF
+
+        next:
+
+        inc hor
+        .ENDW
+        inc vert
+    .ENDW
+
+    ret
+ProcessClick endp
 
 SwapTiles proc oldIndex:DWORD, newIndex:DWORD
 
